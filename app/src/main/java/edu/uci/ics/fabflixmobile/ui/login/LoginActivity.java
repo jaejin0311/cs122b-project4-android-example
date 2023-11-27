@@ -13,7 +13,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
-import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
+//import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
+import edu.uci.ics.fabflixmobile.ui.search.SearchActivity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +32,9 @@ public class LoginActivity extends AppCompatActivity {
       To connect to your machine, you need to use the below IP address
      */
     private final String host = "10.0.2.2";
-    private final String port = "8080";
-    private final String domain = "cs122b_project2_login_cart_example_war";
-    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
+    private final String port = "8443";
+    private final String domain = "cs122b_project1-yolo";
+    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,18 +63,36 @@ public class LoginActivity extends AppCompatActivity {
                 Request.Method.POST,
                 baseURL + "/api/login",
                 response -> {
-                    // TODO: should parse the json response to redirect to appropriate functions
-                    //  upon different response value.
-                    Log.d("login.success", response);
-                    //Complete and destroy login activity once successful
-                    finish();
-                    // initialize the activity(page)/destination
-                    Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                    // activate the list page.
-                    startActivity(MovieListPage);
+                    try {
+                        // Parse the JSON response
+                        JSONObject jsonResponse = new JSONObject(response);
+
+                        // Retrieve status and message from the response
+                        String status = jsonResponse.getString("status");
+                        String message = jsonResponse.getString("message");
+
+                        // Check if login was successful
+                        if (message.equals("success")) {
+                            Log.d("login.success", message);
+
+                            // Complete and destroy login activity once successful
+                            finish();
+
+                            // Redirect to the appropriate activity/page
+                            Intent searchIntent = new Intent(LoginActivity.this, SearchActivity.class);
+                            startActivity(searchIntent);
+                        } else {
+                            // Authentication failed
+                            Log.d("login.error", message);
+                            // Update UI or show a message to the user indicating the failure
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("login.error", "Error parsing JSON response");
+                    }
                 },
                 error -> {
-                    // error
+                    // Handle network or other errors
                     Log.d("login.error", error.toString());
                 }) {
             @Override
@@ -79,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 final Map<String, String> params = new HashMap<>();
                 params.put("username", username.getText().toString());
                 params.put("password", password.getText().toString());
+                params.put("isMobile", "true");
                 return params;
             }
         };
