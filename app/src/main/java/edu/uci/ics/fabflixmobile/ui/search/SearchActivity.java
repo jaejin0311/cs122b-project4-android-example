@@ -26,9 +26,9 @@ import java.util.Map;
 public class SearchActivity extends AppCompatActivity {
 
     private EditText search_title;
-    private final String host = "10.0.2.2";
+    private final String host = "54.177.133.26";
     private final String port = "8443";
-    private final String domain = "cs122b_project1-yolo";
+    private final String domain = "cs122b-project1-yolo";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
     @Override
