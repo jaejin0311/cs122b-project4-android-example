@@ -1,109 +1,33 @@
 package edu.uci.ics.fabflixmobile.ui.single_movie;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import edu.uci.ics.fabflixmobile.data.NetworkManager;
+import edu.uci.ics.fabflixmobile.R;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
-import edu.uci.ics.fabflixmobile.databinding.ActivitySearchBinding;
-import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SingleMovieActivity extends AppCompatActivity {
 
-    private EditText search_title;
-    private final String host = "10.0.2.2";
-    private final String port = "8443";
-    private final String domain = "cs122b_project1-yolo";
-    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.single_movie);
 
-        ActivitySearchBinding binding = ActivitySearchBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        // Retrieve the selected movie from the Intent
+        Movie selectedMovie = getIntent().getParcelableExtra("SELECTED_MOVIE");
 
-        search_title = binding.searchTitle;
-        final Button searchButton = binding.search;
+        // Find the TextViews in your layout
+        TextView titleTextView = findViewById(R.id.title);
+        TextView subtitleTextView = findViewById(R.id.subtitle);
+        TextView directorTextView = findViewById(R.id.director);
+        TextView starsTextView = findViewById(R.id.stars);
+        TextView genresTextView = findViewById(R.id.genres);
 
-        searchButton.setOnClickListener(view -> performSearch());
-    }
-
-    @SuppressLint("SetTextI18n")
-    public void performSearch() {
-        final RequestQueue queue = NetworkManager.sharedManager(this).queue;
-        final StringRequest searchRequest = new StringRequest(
-                Request.Method.GET,
-                baseURL + "/single-movie?id=" + search_title.getText().toString(),
-                response -> {
-                    Log.d("search.success", response);
-
-                    // TODO: Parse the response and handle the search results accordingly
-                    // For now, let's just log the response and proceed to the MovieListActivity
-                    ArrayList<Movie> movies = parseSearchResults(response);
-                    showMovieList(movies);
-                },
-                error -> {
-                    Log.d("search.error", error.toString());
-                    // Handle the error, e.g., display an error message to the user
-                }) {
-        };
-        queue.add(searchRequest);
-    }
-
-    private ArrayList<Movie> parseSearchResults(String response) {
-        ArrayList<Movie> movies = new ArrayList<>();
-
-        try {
-            JSONArray jsonArray = new JSONArray(response);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String title = jsonObject.getString("value");
-                JSONObject data = jsonObject.getJSONObject("data");
-                String movieID = data.getString("movieID");
-                String director = data.getString("director");
-
-                String starsString = data.getString("stars");
-                String[] starsArray = starsString.split(",");
-                String stars = String.join(", ", Arrays.copyOf(starsArray, Math.min(3, starsArray.length)));
-
-                String genresString = data.getString("genres");
-                String[] genresArray = genresString.split(",");
-                String genres = String.join(", ", Arrays.copyOf(genresArray, Math.min(3, genresArray.length)));
-
-                int year = data.getInt("year");
-                // Create a Movie object and add it to the list
-                movies.add(new Movie(title, (short) year, movieID, director, stars, genres));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return movies;
-    }
-
-    private void showMovieList(ArrayList<Movie> movies) {
-        finish();
-        Intent movieListIntent = new Intent(SingleMovieActivity.this, MovieListActivity.class);
-
-        // Pass the list of movies to MovieListActivity using Intent
-        movieListIntent.putExtra("MOVIE_LIST", movies);
-
-        startActivity(movieListIntent);
+        // Set the values to the TextViews
+        titleTextView.setText(selectedMovie.getName());
+        subtitleTextView.setText("Year: " + selectedMovie.getYear());
+        directorTextView.setText("Director: " + selectedMovie.getDirector());
+        starsTextView.setText("Stars: " + selectedMovie.getDisplayedStars());
+        genresTextView.setText("Genres: " + selectedMovie.getGenres());
     }
 }
-

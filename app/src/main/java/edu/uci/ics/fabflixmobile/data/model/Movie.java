@@ -12,14 +12,17 @@ public class Movie implements Parcelable {
 
     private final String director;
     private final String stars;
+    private final String displayedStars;
     private final String genres;
 
-    public Movie(String name, short year, String movieID, String director, String stars, String genres) {
+
+    public Movie(String name, short year, String movieID, String director, String stars, String displayedStars, String genres) {
         this.name = name;
         this.year = year;
         this.movieID = movieID;
         this.director = director;
         this.stars = stars;
+        this.displayedStars = displayedStars;
         this.genres = genres;
     }
 
@@ -43,6 +46,10 @@ public class Movie implements Parcelable {
         return stars;
     }
 
+    public String getDisplayedStars() {
+        return displayedStars;
+    }
+
     public String getGenres() {
         return genres;
     }
@@ -53,6 +60,7 @@ public class Movie implements Parcelable {
         movieID = in.readString();
         director = in.readString();
         stars = in.readString();
+        displayedStars = in.readString();
         genres = in.readString();
     }
 
@@ -80,6 +88,7 @@ public class Movie implements Parcelable {
         dest.writeString(movieID);
         dest.writeString(director);
         dest.writeString(stars);
+        dest.writeString(displayedStars);
         dest.writeString(genres);
     }
 }

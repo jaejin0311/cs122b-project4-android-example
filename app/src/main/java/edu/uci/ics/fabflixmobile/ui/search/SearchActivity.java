@@ -85,11 +85,12 @@ public class SearchActivity extends AppCompatActivity {
 
                 String genresString = data.getString("genres");
                 String[] genresArray = genresString.split(",");
+
                 String genres = String.join(", ", Arrays.copyOf(genresArray, Math.min(3, genresArray.length)));
 
                 int year = data.getInt("year");
                 // Create a Movie object and add it to the list
-                movies.add(new Movie(title, (short) year, movieID, director, stars, genres));
+                movies.add(new Movie(title, (short) year, movieID, director, stars, starsString, genres));
             }
         } catch (JSONException e) {
             e.printStackTrace();
