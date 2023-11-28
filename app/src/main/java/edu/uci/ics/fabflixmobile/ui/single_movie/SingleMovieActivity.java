@@ -1,4 +1,4 @@
-package edu.uci.ics.fabflixmobile.ui.search;
+package edu.uci.ics.fabflixmobile.ui.single_movie;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -20,10 +20,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-public class SearchActivity extends AppCompatActivity {
+public class SingleMovieActivity extends AppCompatActivity {
 
     private EditText search_title;
     private final String host = "10.0.2.2";
@@ -49,7 +47,7 @@ public class SearchActivity extends AppCompatActivity {
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.GET,
-                baseURL + "/auto-complete?query=" + search_title.getText().toString(),
+                baseURL + "/single-movie?id=" + search_title.getText().toString(),
                 response -> {
                     Log.d("search.success", response);
 
@@ -100,7 +98,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void showMovieList(ArrayList<Movie> movies) {
         finish();
-        Intent movieListIntent = new Intent(SearchActivity.this, MovieListActivity.class);
+        Intent movieListIntent = new Intent(SingleMovieActivity.this, MovieListActivity.class);
 
         // Pass the list of movies to MovieListActivity using Intent
         movieListIntent.putExtra("MOVIE_LIST", movies);
